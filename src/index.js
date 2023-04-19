@@ -1,60 +1,51 @@
 //-------------------------------------------------------------------------------//
 //GLOBAL VARIABLES
-const URL = "http://localhost:3000/ramens";
+const url = "http://localhost:3000/ramens";
 const ramenMenu = document.getElementById("ramen-menu");
-let ramenArray;
+const detailsDiv = document.getElementById("ramen-detail");
+const detailsName = document.querySelector(".name");
+const detailsRestaurant = document.querySelector(".restaurant");
+const detailsImg = document.querySelector(".detail-image");
+const detailsRating = document.querySelector("#rating-display");
+const detailsComment = document.querySelector("#comment-display");
+const newRamenForm = document.getElementById("new-ramen");
 //-------------------------------------------------------------------------------//
-
-function getRamenNoodles() {
-  return fetch(URL)
-    .then((resp) => resp.json())
-    .then((ramenNoodles) => {
-      renderimages(ramenNoodles);
-      renderMainRamen(ramenNoodles[0]);
+//FETCH REQUESTS
+fetch(url)
+  .then((resp) => resp.json())
+  .then((ramenNoodles) => {
+    ramenNoodles.forEach((ramen) => {
+      createImgList(ramen);
     });
-}
+    createMainImgDetails(ramenNoodles[0]);
+  })
+  .catch((err) => err.message);
+//-------------------------------------------------------------------------------//
+//FUNCTIONS
 
-function renderimages(ramen) {
-  ramen.map((ram) => {
-    appendImg(ram);
-  });
-}
-
-function appendImg(ramen) {
+//-------------------------------------------------------------------------------//
+function createImgList(ramen) {
   const img = document.createElement("img");
   img.src = ramen.image;
-  ramenMenu.append(img);
-  img.addEventListener("click", (e) => renderMainRamen(ramen));
+  ramenMenu.appendChild(img);
 }
 
-function renderMainRamen(ramen) {
-  const detailsDiv = document.getElementById("ramen-detail");
-  const detailsImg = document.querySelector(".detail-image");
-  const detailsName = document.querySelector(".name");
-  const detailsRestaurant = document.querySelector(".restaurant");
-  const detailsRating = document.querySelector("#rating-display");
-  const detailsComment = document.querySelector("#comment-display");
-  const form = document.getElementById("new-ramen");
-
-  detailsImg.src = ramen.image;
-  detailsName.textContent = ramen.name;
-  detailsRestaurant.textContent = ramen.restaurant;
-  detailsRating.textContent = ramen.rating;
-  detailsComment.textContent = ramen.comment;
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    addNewRamen(e);
-  });
+function createMainImgDetails(ramenObj) {
+  detailsName.textContent = ramenObj.name;
+  detailsRestaurant.textContent = ramenObj.restaurant;
+  detailsImg.src = ramenObj.image;
+  detailsComment.textContent = ramenObj.comment;
+  detailsRating.textContent = ramenObj.rating;
 }
 
-function addNewRamen(e) {
-  const target = e.target;
-  console.log(e.target);
-  const newName = target.querySelector("#new-name").value;
-  const newRestaurant = target.querySelector("#new-restaurant").value;
-  console.log(newRestaurant);
-  const newRamen = {};
-}
-
-getRamenNoodles();
+newRamenForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  let newRamen = {
+    name: e.target.name.value,
+    restaurant: e.target.restaurant.value,
+    image: e.target.image.value,
+    rating: e.target.rating.value,
+    comment: e.target["new-comment"].value,
+  };
+  createImgList(newRamen);
+});
